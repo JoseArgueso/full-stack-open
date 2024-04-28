@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+Note right of browser: User fills textbox with a note and press save button. 
+Note right of browser: The app add the new note into the local notes container and redraw the list. After that, sends the new note to the server with a POST request.
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa <br> { "content": "My note", date: "2024-04-28T10:45:29.892Z"}
+    
+    activate server
+    Note left of server: Server process the new_note_spa and response with HTTP 201. Indicates data has been processed ok.
+    server-->>browser: HTTP 201
+    deactivate server
+
+Note right of browser: Here ends the sequence, the page no needs to reload.
+
+  

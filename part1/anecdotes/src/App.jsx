@@ -6,6 +6,21 @@ const Button = ({ handleClick, text }) => (
   </button>
 )
 
+const MostVotedAnecdote = ({ anecdote }) => (
+  <div>
+    <h1>Anecdote with most votes</h1>
+    {anecdote}
+  </div>
+)
+
+const AnecdoteOfTheDay = ({ anecdote, points }) => (
+  <div>
+    <h1>Anecdote of the day</h1>
+    {anecdote}<br></br>has {points} votes  
+  </div>
+)
+
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -29,19 +44,20 @@ const App = () => {
     const copy = [...points];
       copy[selected] += 1;
       setPoints(copy);
-      console.log(points)
+  }
+
+  const getMostVotedAnecdote = () =>{
+    const maxValue = Math.max(...points)
+    return anecdotes[points.indexOf(maxValue)]
   }
 
   return (
     <div>
-      {anecdotes[selected]}<br></br>has {points[selected]} votes
-      <div>
+      <AnecdoteOfTheDay anecdote={anecdotes[selected]} points={points[selected]}></AnecdoteOfTheDay>
       <Button handleClick={setRandomAnecdote} text='next anecdote'></Button>
       <Button handleClick={voteCurrentAnecdote} text='vote'></Button>
-      </div>
+      <MostVotedAnecdote anecdote={getMostVotedAnecdote()}></MostVotedAnecdote>
     </div>
-    
-   
   )
 }
 

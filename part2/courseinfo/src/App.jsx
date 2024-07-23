@@ -5,10 +5,16 @@ const Part = ({part}) => {
 }
 
 const Course = ({course}) =>{
+  let totalExercises = 0
+  course.parts.forEach(part => {
+    totalExercises += part.exercises
+  })
+
   return (
     <div>
       <h1>Half Stack application developement</h1>
         {course.parts.map(part => <Part key={part.id} part={part} />)}
+      <h3>total of {totalExercises} exercises</h3>
     </div>
   )
 }
@@ -32,6 +38,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4
       }
     ]
   }

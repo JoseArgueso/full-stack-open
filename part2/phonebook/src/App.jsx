@@ -1,5 +1,59 @@
 import { useState } from 'react'
 
+const Person = ({person}) => {
+    
+  return(
+    <li key={person.name}>{person.name} {person.number}</li>
+  )
+}
+
+const Persons = ({persons, filterValue}) => {
+    
+  return(
+    <ul>
+      {persons
+        .filter(person => person.name.toLowerCase()
+        .includes(filterValue.toLowerCase())).map(person => <Person key={person.name} person={person}/>)}
+  </ul>
+  )
+}
+
+const PersonForm = ({onSubmit, valueName, onChangeName, valueNumber, onChangeNumber}) => {
+  return(
+    <form onSubmit={onSubmit}>
+        <div>
+          name: <input 
+                  value={valueName}
+                  onChange={onChangeName}
+                />
+        </div>
+        <div>
+          number: <input 
+                  value={valueNumber}
+                  onChange={onChangeNumber}
+                />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
+const Filter = ({value, onChange}) => {
+  return(
+    <form>
+    <div>
+      name: <input 
+              value={value}
+              onChange={onChange}
+            />
+    </div>
+  </form>
+  )
+}
+
+
 const App = () => {
   
   const [persons, setPersons] = useState([
@@ -9,18 +63,9 @@ const App = () => {
     { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ])
 
-  //const [personsFiltered, setPersonsFiltered] = useState([])
-
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilterName, setNewFilterName] = useState('')
-
-  const Person = ({person}) => {
-    
-    return(
-      <li key={person.name}>{person.name} {person.number}</li>
-    )
-  }
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -51,46 +96,20 @@ const App = () => {
   }
 
   const handleFilterNameChange = (event) => {
+    event.preventDefault()
     console.log(event.target.value)
     setNewFilterName(event.target.value)
-//    setPersonsFiltered(persons.filter(person => person.name.includes(newFilterName)))
   }
 
   return (
     <div>
       <h2>Filter</h2>
-      <form>
-        <div>
-          name: <input 
-                  value={newFilterName}
-                  onChange={handleFilterNameChange}
-                />
-        </div>
-      </form>
+      <Filter value={newFilterName} onChange={handleFilterNameChange}/>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input 
-                  value={newName}
-                  onChange={handleNameChange}
-                />
-        </div>
-        <div>
-          number: <input 
-                  value={newNumber}
-                  onChange={handleNumberChange}
-                />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm onSubmit={addPerson} valueName={newName} onChangeName={handleNameChange} valueNumber={newNumber} onChangeNumber={handleNumberChange}/>
       <h2>Numbers</h2>
       <ul>
-        {/*persons.map(person => <Person key={person.name} person={person}/>)*/}
-        {persons
-          .filter(person => person.name.toLowerCase()
-          .includes(newFilterName.toLowerCase())).map(person => <Person key={person.name} person={person}/>)}
+        <Persons persons={persons} filterValue={newFilterName}/>
       </ul>
     </div>
   )

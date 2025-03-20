@@ -85,7 +85,7 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length+1
+      /*id: persons.length+1    //let the server generate a new id*/
     }
 
     if(persons.filter(person => person.name === newName).length>0){
@@ -93,9 +93,15 @@ const App = () => {
       return
     }
     
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+    /*setPersons(persons.concat(personObject))*/
+
+    axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (event) => {

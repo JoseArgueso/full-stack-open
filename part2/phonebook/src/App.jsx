@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personService from './services/persons'
 
 const Person = ({person}) => {
     
@@ -70,12 +71,18 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
+
+    personService
+      .getAll()
+      .then(initialData => {
+        setPersons(initialData)
+      })
+    /*axios
       .get('http://localhost:3001/persons')
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
-      })
+      })*/
   }, [])
   console.log('render', persons.length, 'notes')
 

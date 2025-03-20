@@ -2,7 +2,7 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "040-123456",
+      "number": "4444",
       "id": "1"
     },
     {
@@ -21,14 +21,9 @@
       "id": "4"
     },
     {
-      "id": "fcf5",
-      "name": "a",
-      "number": "b"
-    },
-    {
-      "id": "b3ae",
-      "name": "c",
-      "number": "1"
+      "id": "8900",
+      "name": "arto2",
+      "number": "1234"
     }
   ]
 }

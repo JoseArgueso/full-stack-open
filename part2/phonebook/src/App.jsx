@@ -2,20 +2,20 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import personService from './services/persons'
 
-const Person = ({person}) => {
+const Person = ({person, handleDelete}) => {
     
   return(
-    <li key={person.name}>{person.name} {person.number}</li>
+    <li key={person.name}>{person.name} {person.number} <button onClick={(event) => handleDelete(event, person)}>delete</button></li>
   )
 }
 
-const Persons = ({persons, filterValue}) => {
+const Persons = ({persons, filterValue, handleDelete}) => {
     
   return(
     <ul>
       {persons
         .filter(person => person.name.toLowerCase()
-        .includes(filterValue.toLowerCase())).map(person => <Person key={person.name} person={person}/>)}
+        .includes(filterValue.toLowerCase())).map(person => <Person key={person.name} person={person} handleDelete={handleDelete}/>)}
   </ul>
   )
 }
@@ -58,12 +58,6 @@ const Filter = ({value, onChange}) => {
 
 const App = () => {
   
-  /*const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])*/
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
@@ -77,12 +71,6 @@ const App = () => {
       .then(initialData => {
         setPersons(initialData)
       })
-    /*axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })*/
   }, [])
   console.log('render', persons.length, 'notes')
 
@@ -92,23 +80,33 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      /*id: persons.length+1    //let the server generate a new id*/
+      /*id: persons.length+1*/    //let the server generate a new id
     }
 
-    if(persons.filter(person => person.name === newName).length>0){
-      alert(`${newName} is already added to phonebook`);
-      return
-    }
-    
-    /*setPersons(persons.concat(personObject))*/
+    const personsFilterd = persons.filter(person => person.name === newName)
+    if(personsFilterd.length>0){
+      const oldPerson = personsFilterd[0]    
 
-    axios
-      .post('http://localhost:3001/persons', personObject)
-      .then(response => {
-        setPersons(persons.concat(response.data))
-        setNewName('')
-        setNewNumber('')
-      })
+      if (window.confirm(`${newName} is already added in the phonebook, replace the old number with a new one?`)) {
+        console.log(`update ${oldPerson.id}`)
+        personService
+          .update(oldPerson.id, personObject)
+          .then(() => {
+            setPersons(persons.map(person => person.id !== oldPerson.id ? person : personObject))
+            setNewName('');
+            setNewNumber('');
+          })
+      }
+      return //always return at this point because updated or not, i can't put a new person with an existent id
+    }
+
+     personService
+      .create(personObject)
+      .then(person => {
+         setPersons(persons.concat(person))
+         setNewName('')
+         setNewNumber('')
+        })
   }
 
   const handleNameChange = (event) => {
@@ -127,6 +125,20 @@ const App = () => {
     setNewFilterName(event.target.value)
   }
 
+  const handleDelete = (event, personToDelete) => {
+    event.preventDefault()
+    console.log(event.target.value)
+
+    if (window.confirm(`Delete ${personToDelete.name}`)) {
+      console.log(`delete ${personToDelete.id}`)
+      personService
+        .remove(personToDelete.id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== personToDelete.id))
+        })
+    }
+  }
+
   return (
     <div>
       <h2>Filter</h2>
@@ -135,7 +147,7 @@ const App = () => {
       <PersonForm onSubmit={addPerson} valueName={newName} onChangeName={handleNameChange} valueNumber={newNumber} onChangeNumber={handleNumberChange}/>
       <h2>Numbers</h2>
       <ul>
-        <Persons persons={persons} filterValue={newFilterName}/>
+        <Persons persons={persons} filterValue={newFilterName} handleDelete={handleDelete}/>
       </ul>
     </div>
   )
